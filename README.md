@@ -91,8 +91,55 @@ func use_ultimate_skill():
     print("Dégâts massifs infligés !")
 ```
 
+### 🎬 Cut-ins Animés & Vidéo 🎥
+
+Pour plus de dynamisme, vous pouvez utiliser des animations de sprites ou des vidéos :
+
+#### Animation de Sprites (`SpriteFrames`)
+1. Dans votre `CutinData`, remplissez le champ **Animated Portrait**.
+2. Appelez `play_cutin` avec le template `"animated_horizontal_slash"`.
+3. Le système jouera l'animation `"default"` pendant le mouvement, et déclenchera l'animation `"slash"` au moment de l'impact !
+
+#### Vidéo (`VideoStream`)
+1. Remplissez le champ **Video Portrait** avec un fichier (recommandé: **.ogv**).
+2. Utilisez le template `"video_horizontal_slash"`.
+3. La vidéo est automatiquement **clippée** (masquée) pour rester à l'intérieur du bandeau horizontal.
+
 > **🔥 Pro-Tip : Intégration SoleilMotion**
 > Si le plugin `soleil_motion` est également installé et actif sur votre projet, les cut-ins secoueront la caméra (`Camera2D`) active du viewport de manière intense lors de certains moments clés de l'animation ! L'intégration est automatique.
+
+---
+
+## 🛠️ Extensibilité (Templates sur-mesure)
+
+Si la forme des templates inclus (bandeau horizontal, poster vertical) ne vous convient pas, vous pouvez **créer vos propres scènes de Cut-in** dans les dossiers de votre jeu, sans jamais modifier le code du module !
+
+Votre scène personnalisée doit simplement :
+1. Être un `Control` (pour prendre tout l'écran).
+2. Avoir un script avec une fonction `setup_cutin(data: CutinData)`.
+3. Gérer elle-même son animation (ex: via un `Tween`) et appeler `queue_free()` à la fin.
+
+### Méthode 1 : Enregistrement Global
+Idéal si vous réutilisez souvent le même template personnalisé.
+
+```gdscript
+# Au lancement du jeu (ex: _ready d'une scène globale)
+SoleilCutins.register_template("shattered_glass", preload("res://assets/cutins/shattered_glass_cutin.tscn"))
+
+# Plus tard dans les combats...
+SoleilCutins.play_cutin("shattered_glass", my_data)
+```
+
+### Méthode 2 : Lancement Direct
+Utile pour un cut-in unique (ex: l'attaque ultime du Boss de fin) défini spécifiquement pour une scène.
+
+```gdscript
+@export var boss_cutin_scene: PackedScene
+@export var boss_cutin_data: CutinData
+
+func trigger_boss_ultimate():
+    SoleilCutins.play_custom_cutin(boss_cutin_scene, boss_cutin_data)
+```
 
 ---
 

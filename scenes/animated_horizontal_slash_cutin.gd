@@ -5,18 +5,17 @@ extends Control
 @onready var _mover: Control = $Pivot/Mover
 @onready var _bg_strip: ColorRect = $Pivot/Mover/BackgroundStrip
 @onready var _flash: ColorRect = $Pivot/Mover/BackgroundStrip/FlashRect
-@onready var _portrait: TextureRect = $Pivot/Mover/PortraitRect
+@onready var _animated_portrait: AnimatedSprite2D = $Pivot/Mover/AnimatedPortrait
 @onready var _name_label: Label = $Pivot/Mover/NameLabel
-
-var _tween: Tween
 
 ## Fills the template with the provided CutinData.
 func setup_cutin(data: CutinData) -> void:
 	if not is_inside_tree():
 		await ready
 		
-	if data.character_portrait:
-		_portrait.texture = data.character_portrait
+	if data.animated_portrait:
+		_animated_portrait.sprite_frames = data.animated_portrait
+		_animated_portrait.play("default") # Default animation name
 		
 	_bg_strip.color = data.background_color
 	_name_label.modulate = data.fx_color
@@ -53,12 +52,17 @@ func _play_animations() -> void:
 			motion.shake(get_viewport().get_camera_2d(), 20.0, 0.3)
 	
 	_flash.modulate.a = 1.0
-	var p4 = create_tween()
-	p4.tween_property(_flash, "modulate:a", 0.0, 0.2)
+	var f_tween = create_tween()
+	f_tween.tween_property(_flash, "modulate:a", 0.0, 0.2)
+	
+	# TRIGGER SPECIAL ANIMATION (e.g. the sword slash)
+	# If there's an animation called "action" or "slash", play it now.
+	if _animated_portrait.sprite_frames and _animated_portrait.sprite_frames.has_animation("slash"):
+		_animated_portrait.play("slash")
 	
 	# 4. Slow drift (tension)
 	var p5 = create_tween()
-	p5.tween_property(_mover, "position:x", -150.0, 0.6)
+	p5.tween_property(_mover, "position:x", -150.0, 0.8)
 	p5.play()
 	await p5.finished
 	

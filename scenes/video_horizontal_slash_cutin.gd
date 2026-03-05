@@ -5,18 +5,16 @@ extends Control
 @onready var _mover: Control = $Pivot/Mover
 @onready var _bg_strip: ColorRect = $Pivot/Mover/BackgroundStrip
 @onready var _flash: ColorRect = $Pivot/Mover/BackgroundStrip/FlashRect
-@onready var _portrait: TextureRect = $Pivot/Mover/PortraitRect
+@onready var _video_player: VideoStreamPlayer = $Pivot/Mover/ClipContainer/VideoStreamPlayer
 @onready var _name_label: Label = $Pivot/Mover/NameLabel
-
-var _tween: Tween
 
 ## Fills the template with the provided CutinData.
 func setup_cutin(data: CutinData) -> void:
 	if not is_inside_tree():
 		await ready
 		
-	if data.character_portrait:
-		_portrait.texture = data.character_portrait
+	if data.video_portrait:
+		_video_player.stream = data.video_portrait
 		
 	_bg_strip.color = data.background_color
 	_name_label.modulate = data.fx_color
@@ -53,14 +51,17 @@ func _play_animations() -> void:
 			motion.shake(get_viewport().get_camera_2d(), 20.0, 0.3)
 	
 	_flash.modulate.a = 1.0
-	var p4 = create_tween()
-	p4.tween_property(_flash, "modulate:a", 0.0, 0.2)
+	var f_tween = create_tween()
+	f_tween.tween_property(_flash, "modulate:a", 0.0, 0.2)
 	
-	# 4. Slow drift (tension)
-	var p5 = create_tween()
-	p5.tween_property(_mover, "position:x", -150.0, 0.6)
-	p5.play()
-	await p5.finished
+	# START VIDEO
+	if _video_player.stream:
+		_video_player.play()
+	
+	# 4. Stay active for a bit to let video play (or until video finished)
+	# We'll wait a fixed duration or until video ends. 
+	# For simplicity in this template, we wait 2.5 seconds.
+	await get_tree().create_timer(2.5).timeout
 	
 	# 5. Exit fast to the left
 	var p6 = create_tween().set_parallel(true)
