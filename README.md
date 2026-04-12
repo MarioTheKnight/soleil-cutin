@@ -159,5 +159,47 @@ MonSuperJeu/
 │   │   └── boss/
 │   │       ├── boss_sprite.png
 │   │       ├── boss_angry_portrait.png   <-- Pour la ressource
-│   │       └── boss_cutin_phase2.tres    <-- La ressource CutinData
+│   │       └��─ boss_cutin_phase2.tres    <-- La ressource CutinData
 ```
+
+---
+
+## Reference
+
+### Resource CutinData
+
+| Propriete | Type | Defaut | Description |
+|-----------|------|--------|-------------|
+| `character_portrait` | `Texture2D` | `null` | Image statique du personnage |
+| `animated_portrait` | `SpriteFrames` | `null` | Animation de sprites (remplace le portrait statique) |
+| `video_portrait` | `VideoStream` | `null` | Video (remplace portrait statique et anime) |
+| `background_color` | `Color` | `(0.1, 0.1, 0.1, 1.0)` | Couleur du bandeau |
+| `fx_color` | `Color` | `WHITE` | Couleur du texte et des effets |
+| `title_text` | `String` | `"Special Attack"` | Nom de l'attaque affiche |
+
+### Templates inclus
+
+| ID | Description |
+|----|-------------|
+| `"horizontal_slash"` | Bandeau horizontal classique |
+| `"vertical_poster"` | Poster vertical plein ecran |
+| `"animated_horizontal_slash"` | Bandeau horizontal avec SpriteFrames |
+| `"video_horizontal_slash"` | Bandeau horizontal avec lecture video |
+
+### Methodes
+
+| Methode | Description |
+|---------|-------------|
+| `play_cutin(template_id: String, data: CutinData)` | Lance un cut-in avec un template enregistre |
+| `play_custom_cutin(cutin_scene: PackedScene, data: CutinData)` | Lance un cut-in avec une scene personnalisee |
+| `register_template(template_id: String, template_scene: PackedScene)` | Enregistre un template custom |
+
+### Signaux
+
+Aucun signal public. Les templates gèrent leur cycle de vie en interne (`queue_free()` a la fin).
+
+### Dependances
+
+| Module | Requis ? | Integration |
+|--------|----------|-------------|
+| `soleil_motion` | non | Si present : camera shake automatique sur les moments d'impact des cut-ins |

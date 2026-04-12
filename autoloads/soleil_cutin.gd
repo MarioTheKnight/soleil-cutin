@@ -9,8 +9,8 @@ var _cutin_templates = {
 }
 
 func _ready() -> void:
-	# Ensure cut-ins render above almost everything else (HUD is usually 1-10)
-	layer = 100
+	# Ensure cut-ins render above everything else including transitions
+	layer = 110
 
 ## Registers a custom cut-in template for later use via play_cutin().
 ## [param template_id]: The string key to identify the template.
